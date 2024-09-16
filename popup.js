@@ -1,40 +1,87 @@
 document.addEventListener('DOMContentLoaded', function() {
   const extractButton = document.getElementById('extractColors');
-  const colorList = document.getElementById('colorList');
+  const colorGrid = document.getElementById('colorGrid');
+  const gradientList = document.getElementById('gradientList');
+  const colorTab = document.getElementById('colorTab');
+  const gradientTab = document.getElementById('gradientTab');
 
   extractButton.addEventListener('click', function() {
     chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
       chrome.scripting.executeScript({
         target: {tabId: tabs[0].id},
-        function: extractColorsFromPage,
-      }, displayColors);
+        function: extractColorsAndGradients,
+      }, displayResults);
     });
   });
 
-  function displayColors(results) {
+  colorTab.addEventListener('click', function(event) {
+    openTab(event, 'Colors');
+  });
+
+  gradientTab.addEventListener('click', function(event) {
+    openTab(event, 'Gradients');
+  });
+
+  function displayResults(results) {
     if (!results || !results[0]) return;
-    const colors = results[0].result;
-    colorList.innerHTML = '';
+    const { colors, gradients } = results[0].result;
+
+    // Display colors
+    colorGrid.innerHTML = '';
     colors.forEach(color => {
-      const li = document.createElement('li');
-      li.className = 'color-item';
-      li.innerHTML = `
+      const div = document.createElement('div');
+      div.className = 'color-item';
+      div.innerHTML = `
         <div class="color-sample" style="background-color: ${color}"></div>
         <span>${color}</span>
       `;
-      li.addEventListener('click', function() {
-        navigator.clipboard.writeText(color).then(() => {
-          alert('Color copied to clipboard!');
-        });
+      div.addEventListener('click', function() {
+        copyToClipboard(color);
       });
-      colorList.appendChild(li);
+      colorGrid.appendChild(div);
+    });
+
+    // Display gradients
+    gradientList.innerHTML = '';
+    gradients.forEach(gradient => {
+      const li = document.createElement('li');
+      li.className = 'gradient-item';
+      li.innerHTML = `
+        <div class="gradient-sample" style="background-image: ${gradient}"></div>
+        <span>${gradient}</span>
+      `;
+      li.addEventListener('click', function() {
+        copyToClipboard(gradient);
+      });
+      gradientList.appendChild(li);
+    });
+  }
+
+  function copyToClipboard(text) {
+    navigator.clipboard.writeText(text).then(() => {
+      alert('Copied to clipboard!');
     });
   }
 });
 
-function extractColorsFromPage() {
+function openTab(evt, tabName) {
+  var i, tabcontent, tablinks;
+  tabcontent = document.getElementsByClassName("tabcontent");
+  for (i = 0; i < tabcontent.length; i++) {
+    tabcontent[i].style.display = "none";
+  }
+  tablinks = document.getElementsByClassName("tablinks");
+  for (i = 0; i < tablinks.length; i++) {
+    tablinks[i].className = tablinks[i].className.replace(" active", "");
+  }
+  document.getElementById(tabName).style.display = "block";
+  evt.currentTarget.className += " active";
+}
+
+function extractColorsAndGradients() {
   const elements = document.getElementsByTagName('*');
   const colorMap = new Map();
+  const gradients = new Set();
 
   function addColor(map, color) {
     map.set(color, (map.get(color) || 0) + 1);
@@ -48,14 +95,25 @@ function extractColorsFromPage() {
   }
 
   for (let element of elements) {
-    const color = window.getComputedStyle(element).color;
-    const backgroundColor = window.getComputedStyle(element).backgroundColor;
+    const style = window.getComputedStyle(element);
+    const color = style.color;
+    const backgroundColor = style.backgroundColor;
+    const backgroundImage = style.backgroundImage;
 
     if (color !== 'rgba(0, 0, 0, 0)') addColor(colorMap, rgbToHex(color));
     if (backgroundColor !== 'rgba(0, 0, 0, 0)') addColor(colorMap, rgbToHex(backgroundColor));
+
+    if (backgroundImage !== 'none' && backgroundImage.includes('gradient')) {
+      gradients.add(backgroundImage);
+    }
   }
 
-  return Array.from(colorMap.entries())
+  const sortedColors = Array.from(colorMap.entries())
     .sort((a, b) => b[1] - a[1])
     .map(entry => entry[0]);
+
+  return {
+    colors: sortedColors,
+    gradients: Array.from(gradients)
+  };
 }
