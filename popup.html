@@ -8,10 +8,10 @@
       width: 300px;
       padding: 10px;
       font-family: Arial, sans-serif;
+      overflow: hidden; /* Prevent scrollbars */
     }
     .tab {
       overflow: hidden;
-      border: 1px solid #ccc;
       background-color: #f1f1f1;
       border-radius: 5px;
     }
@@ -35,23 +35,22 @@
     .tabcontent {
       display: none;
       padding: 6px 12px;
-      border: 1px solid #ccc;
-      border-top: none;
       border-radius: 0 0 5px 5px;
     }
     #colorGrid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
+      display: flex; /* 使用 flexbox 布局 */
+      flex-direction: column; /* 垂直排列 */
+      gap: 10px; /* 设置间距 */
     }
     .color-item {
       display: flex;
       align-items: center;
       cursor: pointer;
+      word-wrap: break-word; /* Allow text to wrap */
     }
     .color-sample {
-      width: 30px;
-      height: 30px;
+      width: 30px; /* Fixed width */
+      height: 30px; /* Fixed height */
       border-radius: 50%;
       margin-right: 10px;
     }
@@ -72,11 +71,28 @@
       display: none;
       color: red;
       font-weight: bold;
+      font-size: 16px;
+      text-align: center;
+      margin-bottom: 10px;
+    }
+    /* Animation styles */
+    .popup {
+      position: fixed;
+      top: 0;
+      right: -300px; /* Start off-screen */
+      width: 300px;
+      height: 100%;
+      background-color: white;
+      box-shadow: -2px 0 5px rgba(0, 0, 0, 0.5);
+      transition: right 0.3s ease;
+    }
+    .popup.open {
+      right: 0; /* Slide in */
     }
   </style>
 </head>
 <body>
-  <h1>Page Color Extractor</h1>
+  <button id="refreshButton">Refresh Colors</button> <!-- Add refresh button -->
   <div id="loadingMessage">Extracting colors, please wait...</div>
 
   <div class="tab">

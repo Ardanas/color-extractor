@@ -13,7 +13,8 @@
   },
   "permissions": [
     "activeTab",
-    "scripting"
+    "scripting",
+    "windows"  // Add this line
   ],
   "background": {
     "service_worker": "background.js"
