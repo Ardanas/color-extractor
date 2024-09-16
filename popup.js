@@ -1,18 +1,19 @@
 document.addEventListener('DOMContentLoaded', function() {
-  const extractButton = document.getElementById('extractColors');
   const colorGrid = document.getElementById('colorGrid');
   const gradientList = document.getElementById('gradientList');
   const colorTab = document.getElementById('colorTab');
   const gradientTab = document.getElementById('gradientTab');
+  const loadingMessage = document.getElementById('loadingMessage');
 
-  extractButton.addEventListener('click', function() {
-    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-      chrome.scripting.executeScript({
-        target: {tabId: tabs[0].id},
-        function: extractColorsAndGradients,
-      }, displayResults);
-    });
+  // Automatically extract colors when the popup is opened
+  extractColors();
+
+  // Set up MutationObserver to listen for DOM changes
+  const observer = new MutationObserver(() => {
+    extractColors();
   });
+
+  observer.observe(document.body, { childList: true, subtree: true });
 
   colorTab.addEventListener('click', function(event) {
     openTab(event, 'Colors');
@@ -22,7 +23,21 @@ document.addEventListener('DOMContentLoaded', function() {
     openTab(event, 'Gradients');
   });
 
+  function extractColors() {
+    loadingMessage.style.display = 'block'; // Show loading message
+    chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
+      chrome.scripting.executeScript(
+        {
+          target: { tabId: tabs[0].id },
+          function: extractColorsAndGradients,
+        },
+        displayResults
+      );
+    });
+  }
+
   function displayResults(results) {
+    loadingMessage.style.display = 'none'; // Hide loading message
     if (!results || !results[0]) return;
     const { colors, gradients } = results[0].result;
 

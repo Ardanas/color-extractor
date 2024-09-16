@@ -13,6 +13,7 @@
       overflow: hidden;
       border: 1px solid #ccc;
       background-color: #f1f1f1;
+      border-radius: 5px;
     }
     .tab button {
       background-color: inherit;
@@ -20,20 +21,23 @@
       border: none;
       outline: none;
       cursor: pointer;
-      padding: 14px 16px;
+      padding: 10px 15px;
       transition: 0.3s;
+      border-radius: 5px 5px 0 0;
     }
     .tab button:hover {
       background-color: #ddd;
     }
     .tab button.active {
       background-color: #ccc;
+      font-weight: bold;
     }
     .tabcontent {
       display: none;
       padding: 6px 12px;
       border: 1px solid #ccc;
       border-top: none;
+      border-radius: 0 0 5px 5px;
     }
     #colorGrid {
       display: grid;
@@ -64,11 +68,16 @@
       height: 30px;
       margin-bottom: 5px;
     }
+    #loadingMessage {
+      display: none;
+      color: red;
+      font-weight: bold;
+    }
   </style>
 </head>
 <body>
   <h1>Page Color Extractor</h1>
-  <button id="extractColors">Extract Colors</button>
+  <div id="loadingMessage">Extracting colors, please wait...</div>
 
   <div class="tab">
     <button class="tablinks active" id="colorTab">Colors</button>
