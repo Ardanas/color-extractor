@@ -1,17 +1,20 @@
 {
   "manifest_version": 3,
-  "name": "我的Chrome插件",
+  "name": "Page Color Extractor",
   "version": "1.0",
-  "description": "这是一个简单的Chrome插件示例",
+  "description": "Extract and display main colors from the current page, sorted by weight",
   "action": {
     "default_popup": "popup.html",
     "default_icon": {
-      "16": "icon16.png",
-      "48": "icon48.png",
-      "128": "icon128.png"
+      "16": "icon.png",
+      "48": "icon.png",
+      "128": "icon.png"
     }
   },
-  "permissions": [],
+  "permissions": [
+    "activeTab",
+    "scripting"
+  ],
   "background": {
     "service_worker": "background.js"
   }

@@ -1,10 +1,36 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>我的Chrome插件</title>
+  <meta charset="UTF-8">
+  <title>Page Color Extractor</title>
+  <style>
+    body {
+      width: 300px;
+      padding: 10px;
+      font-family: Arial, sans-serif;
+    }
+    #colorList {
+      list-style-type: none;
+      padding: 0;
+    }
+    .color-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+      cursor: pointer;
+    }
+    .color-sample {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      margin-right: 10px;
+    }
+  </style>
 </head>
 <body>
-  <h1>欢迎使用我的Chrome插件!</h1>
+  <h1>Page Color Extractor</h1>
+  <button id="extractColors">Extract Colors</button>
+  <ul id="colorList"></ul>
   <script src="popup.js"></script>
 </body>
 </html>
