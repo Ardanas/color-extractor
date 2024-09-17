@@ -3,12 +3,16 @@ chrome.runtime.onInstalled.addListener(function() {
 });
 
 chrome.action.onClicked.addListener((tab) => {
-  chrome.windows.create({
-    url: chrome.runtime.getURL("popup.html"),
-    type: "popup",
-    width: 300,
-    height: 600,
-    top: 0,
-    left: screen.width - 300 // Position the popup on the right side of the screen
+  chrome.tabs.sendMessage(tab.id, {action: "toggleSidebar"}, function(response) {
+    if (chrome.runtime.lastError) {
+      // 如果 content script 还没有加载，则注入并执行它
+      chrome.scripting.executeScript({
+        target: { tabId: tab.id },
+        files: ['content.js']
+      }, () => {
+        // 脚本执行完毕后再次发送消息
+        chrome.tabs.sendMessage(tab.id, {action: "toggleSidebar"});
+      });
+    }
   });
 });
